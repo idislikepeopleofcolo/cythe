@@ -1,0 +1,1313 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Cythe Customer Script", "DarkTheme")
+
+-- MAIN
+local Tab = Window:NewTab("Shots")
+local ShootingSection = Tab:NewSection("Straight Shots")
+
+ShootingSection:NewKeybind("Aimbot Emperor", "", Enum.KeyCode.NumLock, function()
+    local player = game.Players.LocalPlayer
+
+    local function notify(title, message)
+        print(title .. ': ' .. message)
+    end
+    
+    local function refreshAnimations()
+        local Char = player.Character or player.CharacterAdded:Wait()
+        local Human = Char:WaitForChild('Humanoid', 15)
+        local Animate = Char:WaitForChild('Animate', 15)
+        
+        if not Human or not Animate then
+            notify('Refresh Animations', 'Failed to get Animate/Humanoid')
+            return
+        end
+        
+        Animate.Disabled = true
+        for _, v in ipairs(Human:GetPlayingAnimationTracks()) do
+            v:Stop()
+        end
+        Animate.Disabled = false
+        
+        notify('Refresh Animations', 'Animations refreshed successfully')
+    end
+    refreshAnimations()
+    local speaker = game:GetService("Players").LocalPlayer
+    local plr = game:GetService("Players").LocalPlayer
+    local args = {
+       [1] = 12830711336,
+       [2] = 1,
+    }
+    
+    function r15(plr)
+        if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+            return true
+        end
+    end
+    
+    if not r15(speaker) then
+        local pchar = speaker.Character
+        local AnimationId = tostring(args[1])
+        local Anim = Instance.new("Animation")
+        Anim.AnimationId = "rbxassetid://"..AnimationId
+        local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+        k:Play()
+        if args[2] then
+            k:AdjustSpeed(tostring(args[2]))
+        end
+    else
+        notify('R6 Required','This command requires the r6 rig type')
+    end
+    local player = game.Players.LocalPlayer
+    local box1 = game.Workspace.Box.Box1
+    local box2 = game.Workspace.Box.Box2
+    local sensorGoals = game.Workspace.SensorGoals
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    
+    -- Function to check if the player is inside a box
+    local function isInBox(box)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local pos = hrp.Position
+            local boxPos = box.Position
+            local boxSize = box.Size
+            return pos.X > boxPos.X - boxSize.X/2 and pos.X < boxPos.X + boxSize.X/2 and
+                   pos.Y > boxPos.Y - boxSize.Y/2 and pos.Y < boxPos.Y + boxSize.Y/2 and
+                   pos.Z > boxPos.Z - boxSize.Z/2 and pos.Z < boxPos.Z + boxSize.Z/2
+        end
+        return false
+    end
+    
+    -- Function to aim at a target
+    local function aimAtTarget(target)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.CFrame = CFrame.new(hrp.Position, target.Position)
+        end
+    end
+    
+    -- Function to fire a shot with specific arguments
+    local function fireShot(upVectorDampen)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local auraColour = player.Character:FindFirstChild("AuraColour")
+            local red = auraColour and auraColour:FindFirstChild("Red") and auraColour.Red.Value or 1
+            local green = auraColour and auraColour:FindFirstChild("Green") and auraColour.Green.Value or 1
+            local blue = auraColour and auraColour:FindFirstChild("Blue") and auraColour.Blue.Value or 1
+            
+            local args = {
+                [1] = hrp.CFrame.LookVector * 1.0629 + hrp.CFrame.UpVector / upVectorDampen,
+                [2] = 0,
+                [3] = false,
+                [4] = false,
+                [5] = false,
+                [6] = false,
+                [7] = false,
+                [9] = false,
+                [10] = Color3.new(red, green, blue),
+                [11] = 0,
+                [12] = false,
+                [13] = false,
+                [14] = false,
+                [15] = true,
+                [16] = false,
+                [17] = false,
+                [18] = false
+            }
+    
+            ReplicatedStorage:WaitForChild("shoot"):FireServer(unpack(args))
+        end
+    end
+    
+    -- Main logic to check the box and aim/fire
+    local function main()
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+    
+        local upVectorDampen = 8
+        if isInBox(box1) or isInBox(box2) then
+            upVectorDampen = 14
+        end
+    
+        -- Aim at the targets
+        local nearestGoal = (hrp.Position - box1.Position).magnitude < (hrp.Position - box2.Position).magnitude and sensorGoals:GetChildren()[2] or sensorGoals:FindFirstChild("SensorGoal")
+        if nearestGoal then
+            aimAtTarget(nearestGoal)
+        end
+    
+        -- Fire the shot
+        fireShot(upVectorDampen)
+    end
+    
+    -- Run the main function
+    main()         
+ end)
+
+     ShootingSection:NewKeybind("Dragon Drive", "", Enum.KeyCode.NumLock, function()
+        local bodyVelocity = Instance.new("BodyVelocity")
+        local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local ball = workspace.BallFolder:FindFirstChild("Ball")
+        
+        if ball then
+            -- Calculate the direction vector towards the ball
+            local direction = (ball.Position - humanoidRootPart.Position).Unit
+            local speed = 50 -- You can adjust the speed value as needed
+        
+            -- Set the velocity to go towards the ball
+            bodyVelocity.Velocity = direction * speed
+            bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            bodyVelocity.Parent = humanoidRootPart
+        
+            -- Remove the BodyVelocity after 0.1 seconds
+            game.Debris:AddItem(bodyVelocity, 0.1)
+            wait(0.12)
+            local speaker = game:GetService("Players").LocalPlayer
+            local plr = game:GetService("Players").LocalPlayer
+            local args = {
+               [1] = 13399984972,
+               [2] = 1,
+            }
+            
+            function r15(plr)
+                if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+                    return true
+                end
+            end
+            
+            if not r15(speaker) then
+                local pchar = speaker.Character
+                local AnimationId = tostring(args[1])
+                local Anim = Instance.new("Animation")
+                Anim.AnimationId = "rbxassetid://"..AnimationId
+                local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+                k:Play()
+                if args[2] then
+                    k:AdjustSpeed(tostring(args[2]))
+                end
+            else
+                notify('R6 Required','This command requires the r6 rig type')
+            end
+            local bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.Parent = (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
+    bodyVelocity.Velocity = ((game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.LookVector)
+    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    game.Debris:AddItem(bodyVelocity, .4)
+        end   local args = {
+        [1] = Vector3.new(0, 1, 0),
+        [2] = 25,
+        [3] = false,
+        [4] = false,
+        [5] = false,
+        [6] = false,
+        [7] = false,
+        [9] = false,
+        [10] = Color3.new(0,0,0),
+        [11] = 40,
+        [12] = false,
+        [13] = false,
+        [14] = false,
+        [15] = false,
+        [16] = false,
+        [17] = false,
+        [18] = false
+    }
+    
+    -- Function to fire the remote event
+    local function fireRemote()
+        game:GetService("ReplicatedStorage"):WaitForChild("shoot"):FireServer(unpack(args))
+    end
+    
+    -- Loop the remote event for 3 seconds, then stop
+    local duration = 0.4 -- seconds
+    local interval = 0.1 -- Adjust the interval to control how often it fires
+    
+    local startTime = tick()
+    local loopFinished = false
+    
+    while not loopFinished do
+        fireRemote()
+        wait(interval)
+        
+        if tick() - startTime >= duration then
+            loopFinished = true -- Stop looping after 3 seconds
+        end
+    end
+    local speaker = game:GetService("Players").LocalPlayer
+    local plr = game:GetService("Players").LocalPlayer
+    local args = {
+       [1] = 12830711336,
+       [2] = 1,
+    }
+    
+    function r15(plr)
+        if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+            return true
+        end
+    end
+    
+    if not r15(speaker) then
+        local pchar = speaker.Character
+        local AnimationId = tostring(args[1])
+        local Anim = Instance.new("Animation")
+        Anim.AnimationId = "rbxassetid://"..AnimationId
+        local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+        k:Play()
+        if args[2] then
+            k:AdjustSpeed(tostring(args[2]))
+        end
+    else
+        notify('R6 Required','This command requires the r6 rig type')
+    end
+    local TweenService = game:GetService("TweenService")
+    local Players = game:GetService("Players")
+    
+    local speaker = Players.LocalPlayer
+    local plr = Players.LocalPlayer
+    local args = {
+        [1] = 12830711336,
+        [2] = 1,
+    }
+    
+    function r15(plr)
+        if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+            return true
+        end
+    end
+    
+    if not r15(speaker) then
+        local pchar = speaker.Character
+        local AnimationId = tostring(args[1])
+        local Anim = Instance.new("Animation")
+        Anim.AnimationId = "rbxassetid://"..AnimationId
+        local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+        
+        k:Play()
+        if args[2] then
+            k:AdjustSpeed(tostring(args[2]))
+        end
+    
+        -- Rotate the character upside down slowly using a Tween after playing the animation
+        local humanoidRootPart = pchar:FindFirstChild("HumanoidRootPart")
+        if humanoidRootPart then
+            local targetCFrame = humanoidRootPart.CFrame * CFrame.Angles(math.rad(60), 1000, 0)
+            local tweenInfo = TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = targetCFrame})
+            
+            -- Wait a short moment before starting the tween
+            wait(0) -- Adjust this value as needed
+            
+            tween:Play()
+        end
+    else
+        notify('R6 Required','This command requires the r6 rig type')
+    end
+    
+    local player = game.Players.LocalPlayer
+    local mouse = player:GetMouse()
+    
+    -- Get the position of the character's HumanoidRootPart
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local characterPosition = humanoidRootPart.Position
+    
+    -- Get the direction towards the cursor
+    local direction = (mouse.Hit.p - characterPosition).unit
+    
+    -- Construct the arguments table with the direction as LookVector
+            local args = {
+                [1] = -direction/1.6,
+                [2] = 141,
+                [3] = false,
+                [4] = true,
+                [5] = false,
+                [6] = false,
+                [7] = false,
+                [9] = false,
+                [10] = Color3.new(0,0,0),
+                [11] = 40,
+                [12] = false,
+                [13] = false,
+                [14] = false,
+                [15] = false,
+                [16] = true,
+                [17] = false,
+                [18] = false
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("SpecEvents"):WaitForChild("Formless"):FireServer(unpack(args))
+     end)
+
+ ShootingSection:NewKeybind("Formless Aimbot", "", Enum.KeyCode.NumLock, function()
+    local speaker = game:GetService("Players").LocalPlayer
+    local plr = game:GetService("Players").LocalPlayer
+    local args = {
+       [1] = 13857940523,
+       [2] = 1,
+    }
+    
+    function r15(plr)
+        if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+            return true
+        end
+    end
+    
+    if not r15(speaker) then
+        local pchar = speaker.Character
+        local AnimationId = tostring(args[1])
+        local Anim = Instance.new("Animation")
+        Anim.AnimationId = "rbxassetid://"..AnimationId
+        local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+        k:Play()
+        if args[2] then
+            k:AdjustSpeed(tostring(args[2]))
+        end
+    else
+        notify('R6 Required','This command requires the r6 rig type')
+    end
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    
+    local function makeCharacterJump()
+        character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+    
+    -- Call the function to make the character jump
+    makeCharacterJump()    
+    local player = game.Players.LocalPlayer
+    local ball = workspace.BallFolder.Ball
+    local ballInAir = ball.Position.Y > 2.3 and ball.AssemblyLinearVelocity.Y > 0
+    local box1 = game.Workspace.Box.Box1
+    local box2 = game.Workspace.Box.Box2
+    local sensorGoals = game.Workspace.SensorGoals
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    
+    -- Function to create the corner parts if they don't already exist
+    local function createCornerParts()
+        local partsInfo = {
+            {name = "R Top Left Corner", position = Vector3.new(-464.5847473144531, 7.934289932250977, -47.13636016845703)},
+            {name = "R Top Right Corner", position = Vector3.new(-464.5847473144531, 7.934289932250977, -85.54022979736328)},
+            {name = "L Top Left Corner", position = Vector3.new(270.8377685546875, 7.934289932250977, -85.92559814453125)},
+            {name = "L Top Right Corner", position = Vector3.new(270.8377685546875, 7.934289932250977, -47.5217170715332)}
+        }
+    
+        for _, info in ipairs(partsInfo) do
+            if not workspace:FindFirstChild(info.name) then
+                local part = Instance.new("Part")
+                part.Name = info.name
+                part.Size = Vector3.new(1, 1, 1) -- Adjust the size as needed
+                part.Position = info.position
+                part.Anchored = true
+                part.CanCollide = false
+                part.Transparency = 1 -- Make the part fully transparent
+                part.Parent = workspace
+            end
+        end
+    end
+    
+    -- Create the parts before running the rest of the script
+    createCornerParts()
+    
+    local corners = {
+        RTopLeft = game.Workspace:FindFirstChild("R Top Left Corner"),
+        RTopRight = game.Workspace:FindFirstChild("R Top Right Corner"),
+        LTopLeft = game.Workspace:FindFirstChild("L Top Left Corner"),
+        LTopRight = game.Workspace:FindFirstChild("L Top Right Corner")
+    }
+    
+    -- Function to check if the player is inside a box
+    local function isInBox(box)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local pos = hrp.Position
+            local boxPos = box.Position
+            local boxSize = box.Size
+            return pos.X > boxPos.X - boxSize.X/2 and pos.X < boxPos.X + boxSize.X/2 and
+                   pos.Y > boxPos.Y - boxSize.Y/2 and pos.Y < boxPos.Y + boxSize.Y/2 and
+                   pos.Z > boxPos.Z - boxSize.Z/2 and pos.Z < boxPos.Z + boxSize.Z/2
+        end
+        return false
+    end
+    
+    -- Function to determine if the player is on the left or right side of the box
+    local function isPlayerOnLeftOrRight(box)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return "unknown" end
+    
+        -- Calculate the vector from the box to the player
+        local boxToPlayer = (hrp.Position - box.Position).Unit
+    
+        -- Use the box's right vector to determine if the player is on the left or right
+        local dotProduct = box.CFrame.RightVector:Dot(boxToPlayer)
+    
+        if dotProduct > 0 then
+            return "right"
+        else
+            return "left"
+        end
+    end
+    
+    -- Function to check if the player has a straight path to the target
+    local function hasStraightPathToTarget(box)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return false end
+    
+        -- Check if the player's Z position is almost perfectly aligned with the box's Z position
+        return math.abs(hrp.Position.Z - box.Position.Z) < 0.01 -- Maximize accuracy with a very small threshold
+    end
+    
+    -- Function to determine which target to aim at
+    local function determineTarget(box)
+        if hasStraightPathToTarget(box) then
+            if box == box1 then
+                return sensorGoals:GetChildren()[2] -- Aim at this if in box1
+            elseif box == box2 then
+                return sensorGoals.SensorGoal -- Aim at this if in box2
+            end
+        else
+            local position = isPlayerOnLeftOrRight(box)
+            if box == box1 then
+                if position == "left" then
+                    return corners.RTopRight
+                else
+                    return corners.RTopLeft
+                end
+            elseif box == box2 then
+                if position == "left" then
+                    return corners.LTopLeft
+                else
+                    return corners.LTopRight
+                end
+            end
+        end
+    end
+    
+    -- Function to aim at a target with high accuracy
+    local function aimAtTarget(target)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp and target then
+            -- Ensure the CFrame is calculated with maximum precision
+            hrp.CFrame = CFrame.new(hrp.Position, target.Position)
+        end
+    end
+    
+    -- Function to fire the first remote event
+    local function fireFirstRemote()
+        local args = {
+            [1] = Vector3.new(0,1,0),
+            [2] = 43,
+            [3] = false,
+            [4] = false,
+            [5] = false,
+            [6] = false,
+            [7] = false,
+            [9] = false,
+            [10] = Color3.new(
+                (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Red") and player.Character.AuraColour.Red.Value) or 1,
+                (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Green") and player.Character.AuraColour.Green.Value) or 1,
+                (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Blue") and player.Character.AuraColour.Blue.Value) or 1
+            ),
+            [11] = 40,
+            [12] = false,
+            [13] = false,
+            [14] = false,
+            [15] = false,
+            [16] = false,
+            [17] = false,
+            [18] = false
+        }
+        ReplicatedStorage:WaitForChild("shoot"):FireServer(unpack(args))
+    end
+    
+    -- Function to fire the second remote event
+    local function fireSecondRemote()
+        local args = {
+            [1] = (player.Character or player.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.LookVector*1.25 + -(player.Character or player.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.UpVector / 25,
+            [2] = -100,
+            [3] = false,
+            [4] = true,
+            [5] = false,
+            [6] = false,
+            [7] = false,
+            [9] = false,
+            [10] = Color3.new(
+                (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Red") and player.Character.AuraColour.Red.Value) or 1,
+                (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Green") and player.Character.AuraColour.Green.Value) or 1,
+                (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Blue") and player.Character.AuraColour.Blue.Value) or 1
+            ),
+            [11] = 40,
+            [12] = false,
+            [13] = false,
+            [14] = false,
+            [15] = false,
+            [16] = true,
+            [17] = false,
+            [18] = false
+        }
+        ReplicatedStorage:WaitForChild("SpecEvents"):WaitForChild("Formless"):FireServer(unpack(args))
+    end
+    
+    -- Main logic to check the box and aim/fire
+    local function main()
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+    
+        local closestBox = (hrp.Position - box1.Position).Magnitude < (hrp.Position - box2.Position).Magnitude and box1 or box2
+    
+        -- Determine the target to aim at
+        local target = determineTarget(closestBox)
+        aimAtTarget(target)
+    
+        -- Check if the ball is in the air or below a certain height
+        if ballInAir then
+            -- Ball is in the air, fire the second remote event instantly
+            fireSecondRemote()
+        else
+            -- Ball is not in the air or below a certain height, fire the first remote event then the second one
+            fireFirstRemote()
+            fireSecondRemote()
+        end
+    end
+    
+    -- Run the main function
+    main()    
+    wait(0.01)
+    -- Get the character and humanoid
+local character = game.Players.LocalPlayer.Character
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Function to disable rotation
+local function disableRotation()
+    humanoid.AutoRotate = false
+end
+
+-- Call the function to disable rotation
+disableRotation()
+wait(0.8)
+-- Get the character and humanoid
+local character = game.Players.LocalPlayer.Character
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Function to disable rotation
+local function disableRotation()
+    humanoid.AutoRotate = true
+end
+
+-- Call the function to disable rotation
+disableRotation()
+ end)
+
+ ShootingSection:NewKeybind("Big Bang Drive", "A One In A Million Shot", Enum.KeyCode.NumLock, function()
+    local speaker = game:GetService("Players").LocalPlayer
+    local plr = game:GetService("Players").LocalPlayer
+    local args = {
+       [1] = 13857940523,
+       [2] = 1,
+    }
+    
+    function r15(plr)
+        if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+            return true
+        end
+    end
+    
+    if not r15(speaker) then
+        local pchar = speaker.Character
+        local AnimationId = tostring(args[1])
+        local Anim = Instance.new("Animation")
+        Anim.AnimationId = "rbxassetid://"..AnimationId
+        local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+        k:Play()
+        if args[2] then
+            k:AdjustSpeed(tostring(args[2]))
+        end
+    else
+        notify('R6 Required','This command requires the r6 rig type')
+    end
+    local bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.Parent = (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
+    bodyVelocity.Velocity = (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.UpVector*60
+    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    game.Debris:AddItem(bodyVelocity, .1)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local box1 = game.Workspace:FindFirstChild("Box") and game.Workspace.Box:FindFirstChild("Box1")
+    local box2 = game.Workspace:FindFirstChild("Box") and game.Workspace.Box:FindFirstChild("Box2")
+    local sensorGoals = game.Workspace:FindFirstChild("SensorGoals")
+    local replicatedStorage = game:GetService("ReplicatedStorage")
+    local specEvents = replicatedStorage:FindFirstChild("SpecEvents")
+    local formless = specEvents and specEvents:FindFirstChild("Formless")
+    
+    -- Function to aim at a target
+    local function aimAtTarget(target)
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(character.HumanoidRootPart.Position, target.Position)
+        end
+    end
+    
+    -- Function to get the closest box
+    local function getClosestBox()
+        local charPosition = character and character:FindFirstChild("HumanoidRootPart") and character.HumanoidRootPart.Position
+        if charPosition then
+            local distanceToBox1 = box1 and (charPosition - box1.Position).magnitude or math.huge
+            local distanceToBox2 = box2 and (charPosition - box2.Position).magnitude or math.huge
+    
+            if distanceToBox1 < distanceToBox2 then
+                return box1
+            else
+                return box2
+            end
+        end
+        return nil
+    end
+    
+    -- Function to fire a shot with specific arguments
+    local function fireShot(args)
+        if formless then
+            formless:FireServer(unpack(args))
+        else
+            warn("Formless event not found in SpecEvents")
+        end
+    end
+    
+    -- Check FlowValue
+    local playerName = player.Name
+    local playerObject = game.Workspace:FindFirstChild(playerName)
+    local flowValue = playerObject and playerObject:FindFirstChild("FlowValue")
+    
+    if flowValue and flowValue.Value then
+        -- Determine target based on closest box
+        local closestBox = getClosestBox()
+        local target
+    
+        if closestBox == box1 then
+            target = sensorGoals and sensorGoals:GetChildren()[2]
+        elseif closestBox == box2 then
+            target = sensorGoals and sensorGoals:FindFirstChild("SensorGoal")
+        end
+    
+        -- Aim at the target if found
+        if target then
+            aimAtTarget(target)
+            
+            -- Modify argument 2 to be negative if FlowValue is true
+            local auraColour = character:FindFirstChild("AuraColour")
+            local red = auraColour and auraColour:FindFirstChild("Red") and auraColour.Red.Value or 1
+            local green = auraColour and auraColour:FindFirstChild("Green") and auraColour.Green.Value or 1
+            local blue = auraColour and auraColour:FindFirstChild("Blue") and auraColour.Blue.Value or 1
+            
+            local args = {
+                [1] = character.HumanoidRootPart.CFrame.LookVector * 1.32 + character.HumanoidRootPart.CFrame.UpVector / 5,
+                [2] = -75, -- Negative value since FlowValue is true
+                [3] = false,
+                [4] = true,
+                [5] = false,
+                [6] = false,
+                [7] = false,
+                [9] = false,
+                [10] = Color3.new(red, green, blue),
+                [11] = 40,
+                [12] = false,
+                [13] = false,
+                [14] = false,
+                [15] = false,
+                [16] = true,
+                [17] = false,
+                [18] = false
+            }
+    
+            -- Fire the shot with the adjusted arguments
+            fireShot(args)
+        else
+            warn("Target not found in SensorGoals")
+        end
+    else
+        -- If FlowValue is not true, fire the shot without aiming
+        local auraColour = character:FindFirstChild("AuraColour")
+        local red = auraColour and auraColour:FindFirstChild("Red") and auraColour.Red.Value or 1
+        local green = auraColour and auraColour:FindFirstChild("Green") and auraColour.Green.Value or 1
+        local blue = auraColour and auraColour:FindFirstChild("Blue") and auraColour.Blue.Value or 1
+    
+        local args = {
+            [1] = character.HumanoidRootPart.CFrame.LookVector * 1.32 - character.HumanoidRootPart.CFrame.UpVector / 5,
+            [2] = 60, -- Positive value since FlowValue is false or nil
+            [3] = false,
+            [4] = true,
+            [5] = false,
+            [6] = false,
+            [7] = false,
+            [9] = false,
+            [10] = Color3.new(red, green, blue),
+            [11] = 40,
+            [12] = false,
+            [13] = false,
+            [14] = false,
+            [15] = false,
+            [16] = true,
+            [17] = false,
+            [18] = false
+        }
+    
+        -- Fire the shot without aiming
+        fireShot(args)
+    end    
+ end)
+
+ local ShootingSection = Tab:NewSection("Feints")
+
+ ShootingSection:NewKeybind("Kick Cancel", "Feints Shots And Dribble Moves", Enum.KeyCode.NumLock, function()
+    local player = game.Players.LocalPlayer
+
+    local function notify(title, message)
+        print(title .. ': ' .. message)
+    end
+    
+    local function refreshAnimations()
+        local Char = player.Character or player.CharacterAdded:Wait()
+        local Human = Char:WaitForChild('Humanoid', 15)
+        local Animate = Char:WaitForChild('Animate', 15)
+        
+        if not Human or not Animate then
+            notify('Refresh Animations', 'Failed to get Animate/Humanoid')
+            return
+        end
+        
+        Animate.Disabled = true
+        for _, v in ipairs(Human:GetPlayingAnimationTracks()) do
+            v:Stop()
+        end
+        Animate.Disabled = false
+        
+        notify('Refresh Animations', 'Animations refreshed successfully')
+    end
+    refreshAnimations()
+end)
+
+ShootingSection:NewKeybind("L 2 Stage Direct Shot Feint", "", Enum.KeyCode.NumLock, function()
+    local player = game.Players.LocalPlayer
+    local mouse = player:GetMouse()
+    local ball = game.Workspace.BallFolder:WaitForChild("Ball")
+    local range = 5 -- Set your desired range here
+    local isRemoteExecuted = false
+    
+    -- Function to check if player is inside a specific box
+    local function isInBox(box)
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local playerPos = humanoidRootPart.Position
+    
+        local boxPosition = box.Position
+        local boxSize = box.Size / 2 -- Get half the size of the box for accurate comparison
+        return (playerPos.X >= boxPosition.X - boxSize.X and playerPos.X <= boxPosition.X + boxSize.X and
+                playerPos.Y >= boxPosition.Y - boxSize.Y and playerPos.Y <= boxPosition.Y + boxSize.Y and
+                playerPos.Z >= boxPosition.Z - boxSize.Z and playerPos.Z <= boxPosition.Z + boxSize.Z)
+    end
+    
+    -- Function to check if ball is within a specific range of the player
+    local function isBallInRange()
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local ballPosition = ball.Position
+        local characterPosition = humanoidRootPart.Position
+        local distance = (ballPosition - characterPosition).magnitude
+        return distance <= range
+    end
+    
+    -- Function to execute the remote
+    local function executeRemote()
+        if not isRemoteExecuted then
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            local characterPosition = humanoidRootPart.Position
+    
+            -- Get the direction towards the cursor
+            local direction = (mouse.Hit.p - characterPosition).unit
+    
+            -- Construct the arguments table with the direction as LookVector
+            local args = {
+                [1] = -(game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.RightVector/5 + (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.UpVector/3.6,
+                [2] = 222,
+                [3] = false,
+                [4] = true,
+                [5] = false,
+                [6] = true,
+                [7] = false,
+                [9] = false,
+                [10] = Color3.new(
+        (game.Players.LocalPlayer.Character:FindFirstChild("AuraColour") and game.Players.LocalPlayer.Character.AuraColour:FindFirstChild("Red") and game.Players.LocalPlayer.Character.AuraColour.Red.Value) or 1,
+        (game.Players.LocalPlayer.Character:FindFirstChild("AuraColour") and game.Players.LocalPlayer.Character.AuraColour:FindFirstChild("Green") and game.Players.LocalPlayer.Character.AuraColour.Green.Value) or 1,
+        (game.Players.LocalPlayer.Character:FindFirstChild("AuraColour") and game.Players.LocalPlayer.Character.AuraColour:FindFirstChild("Blue") and game.Players.LocalPlayer.Character.AuraColour.Blue.Value) or 1
+    ),
+                [11] = 40,
+                [12] = false,
+                [13] = false,
+                [14] = false,
+                [15] = false,
+                [16] = false,
+                [17] = false,
+                [18] = false
+            }
+    
+            game:GetService("ReplicatedStorage"):WaitForChild("shoot"):FireServer(unpack(args))
+            isRemoteExecuted = true
+        end
+    end
+    local Players = game:GetService("Players")
+local speaker = Players.LocalPlayer
+local Ball = Workspace.BallFolder.Ball
+local range = 5 -- Set your desired range here
+local AnimationId = 13082657041
+local AnimationSpeed = 1
+
+function r15(plr)
+    if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+        return true
+    end
+end
+
+if not r15(speaker) then
+    local pchar = speaker.Character
+    local Anim = Instance.new("Animation")
+    Anim.AnimationId = "rbxassetid://"..AnimationId
+    local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+    k:Play()
+    k:AdjustSpeed(AnimationSpeed)
+    
+    local connection
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        if (Ball.Position - pchar.HumanoidRootPart.Position).Magnitude <= range then
+            k:Stop()
+            connection:Disconnect()
+        end
+    end)
+else
+    print('R6 Required: This command requires the r6 rig type')
+end
+
+    game:GetService("RunService").RenderStepped:Connect(function()
+        local box1 = game.Workspace.Box:FindFirstChild("Box1")
+        local box2 = game.Workspace.Box:FindFirstChild("Box2")
+        
+        if (box1 and isInBox(box1)) or (box2 and isInBox(box2)) then
+            if isBallInRange() then
+                executeRemote()
+            end
+        end
+    end)
+ end)
+
+ ShootingSection:NewKeybind("R 2 Stage Direct Shot Feint", "", Enum.KeyCode.NumLock, function()
+    local player = game.Players.LocalPlayer
+    local mouse = player:GetMouse()
+    local ball = game.Workspace.BallFolder:WaitForChild("Ball")
+    local range = 5 -- Set your desired range here
+    local isRemoteExecuted = false
+    
+    -- Function to check if player is inside a specific box
+    local function isInBox(box)
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local playerPos = humanoidRootPart.Position
+    
+        local boxPosition = box.Position
+        local boxSize = box.Size / 2 -- Get half the size of the box for accurate comparison
+        return (playerPos.X >= boxPosition.X - boxSize.X and playerPos.X <= boxPosition.X + boxSize.X and
+                playerPos.Y >= boxPosition.Y - boxSize.Y and playerPos.Y <= boxPosition.Y + boxSize.Y and
+                playerPos.Z >= boxPosition.Z - boxSize.Z and playerPos.Z <= boxPosition.Z + boxSize.Z)
+    end
+    
+    -- Function to check if ball is within a specific range of the player
+    local function isBallInRange()
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local ballPosition = ball.Position
+        local characterPosition = humanoidRootPart.Position
+        local distance = (ballPosition - characterPosition).magnitude
+        return distance <= range
+    end
+    
+    -- Function to execute the remote
+    local function executeRemote()
+        if not isRemoteExecuted then
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            local characterPosition = humanoidRootPart.Position
+    
+            -- Get the direction towards the cursor
+            local direction = (mouse.Hit.p - characterPosition).unit
+    
+            -- Construct the arguments table with the direction as LookVector
+            local args = {
+                [1] = (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.RightVector/5 + (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.UpVector/3.6,
+                [2] = 222,
+                [3] = false,
+                [4] = true,
+                [5] = false,
+                [6] = true,
+                [7] = false,
+                [9] = false,
+                [10] = Color3.new(
+        (game.Players.LocalPlayer.Character:FindFirstChild("AuraColour") and game.Players.LocalPlayer.Character.AuraColour:FindFirstChild("Red") and game.Players.LocalPlayer.Character.AuraColour.Red.Value) or 1,
+        (game.Players.LocalPlayer.Character:FindFirstChild("AuraColour") and game.Players.LocalPlayer.Character.AuraColour:FindFirstChild("Green") and game.Players.LocalPlayer.Character.AuraColour.Green.Value) or 1,
+        (game.Players.LocalPlayer.Character:FindFirstChild("AuraColour") and game.Players.LocalPlayer.Character.AuraColour:FindFirstChild("Blue") and game.Players.LocalPlayer.Character.AuraColour.Blue.Value) or 1
+    ),
+                [11] = 40,
+                [12] = false,
+                [13] = false,
+                [14] = false,
+                [15] = false,
+                [16] = false,
+                [17] = false,
+                [18] = false
+            }
+    
+            game:GetService("ReplicatedStorage"):WaitForChild("shoot"):FireServer(unpack(args))
+            isRemoteExecuted = true
+        end
+    end
+    local Players = game:GetService("Players")
+local speaker = Players.LocalPlayer
+local Ball = Workspace.BallFolder.Ball
+local range = 5 -- Set your desired range here
+local AnimationId = 13082657041
+local AnimationSpeed = 1
+
+function r15(plr)
+    if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+        return true
+    end
+end
+
+if not r15(speaker) then
+    local pchar = speaker.Character
+    local Anim = Instance.new("Animation")
+    Anim.AnimationId = "rbxassetid://"..AnimationId
+    local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+    k:Play()
+    k:AdjustSpeed(AnimationSpeed)
+    
+    local connection
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        if (Ball.Position - pchar.HumanoidRootPart.Position).Magnitude <= range then
+            k:Stop()
+            connection:Disconnect()
+        end
+    end)
+else
+    print('R6 Required: This command requires the r6 rig type')
+end
+
+    game:GetService("RunService").RenderStepped:Connect(function()
+        local box1 = game.Workspace.Box:FindFirstChild("Box1")
+        local box2 = game.Workspace.Box:FindFirstChild("Box2")
+        
+        if (box1 and isInBox(box1)) or (box2 and isInBox(box2)) then
+            if isBallInRange() then
+                executeRemote()
+            end
+        end
+    end)
+ end)
+
+ local ShootingSection = Tab:NewSection("Headers")
+
+ ShootingSection:NewKeybind("Diving-Dragon Header", "", Enum.KeyCode.NumLock, function()
+    local player = game.Players.LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local box1 = game.Workspace.Box.Box1
+    local box2 = game.Workspace.Box.Box2
+    local sensorGoals = game.Workspace.SensorGoals
+    local ball = workspace.BallFolder.Ball
+    
+    local function notify(title, message)
+        print(title .. ': ' .. message)
+    end
+    
+    local function refreshAnimations()
+        local Char = player.Character or player.CharacterAdded:Wait()
+        local Human = Char:WaitForChild('Humanoid', 15)
+        local Animate = Char:WaitForChild('Animate', 15)
+        
+        if not Human or not Animate then
+            notify('Refresh Animations', 'Failed to get Animate/Humanoid')
+            return
+        end
+        
+        -- Stop all current animations
+        Animate.Disabled = true
+        for _, v in ipairs(Human:GetPlayingAnimationTracks()) do
+            v:Stop()
+        end
+        
+        
+        notify('Refresh Animations', 'Animations stopped and remote event fired successfully')
+        
+        -- Wait for a short time to let the remote animation play, if needed
+        wait(0.05)  -- Adjust this time if necessary
+        
+        -- Stop specific animations triggered by the remote event
+        local animationIdsToStop = {
+            "rbxassetid://14963005761",
+            "rbxassetid://13891765925"
+        }
+        
+        for _, v in ipairs(Human:GetPlayingAnimationTracks()) do
+            if table.find(animationIdsToStop, v.Animation.AnimationId) then
+                v:Stop()
+            end
+        end
+        
+        -- Run additional logic for aiming and firing
+        
+        -- Function to create the corner parts if they don't already exist
+        local function createCornerParts()
+            local partsInfo = {
+                {name = "R Top Left Corner", position = Vector3.new(-464.5847473144531, 7.934289932250977, -47.13636016845703)},
+                {name = "R Top Right Corner", position = Vector3.new(-464.5847473144531, 7.934289932250977, -85.54022979736328)},
+                {name = "L Top Left Corner", position = Vector3.new(270.8377685546875, 7.934289932250977, -85.92559814453125)},
+                {name = "L Top Right Corner", position = Vector3.new(270.8377685546875, 7.934289932250977, -47.5217170715332)}
+            }
+        
+            for _, info in ipairs(partsInfo) do
+                if not workspace:FindFirstChild(info.name) then
+                    local part = Instance.new("Part")
+                    part.Name = info.name
+                    part.Size = Vector3.new(1, 1, 1) -- Adjust the size as needed
+                    part.Position = info.position
+                    part.Anchored = true
+                    part.CanCollide = false
+                    part.Transparency = 1 -- Make the part fully transparent
+                    part.Parent = workspace
+                end
+            end
+        end
+        
+        -- Create the parts before running the rest of the script
+        createCornerParts()
+        
+        local corners = {
+            RTopLeft = game.Workspace:FindFirstChild("R Top Left Corner"),
+            RTopRight = game.Workspace:FindFirstChild("R Top Right Corner"),
+            LTopLeft = game.Workspace:FindFirstChild("L Top Left Corner"),
+            LTopRight = game.Workspace:FindFirstChild("L Top Right Corner")
+        }
+        
+        -- Function to check if the player is inside a box
+        local function isInBox(box)
+            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local pos = hrp.Position
+                local boxPos = box.Position
+                local boxSize = box.Size
+                return pos.X > boxPos.X - boxSize.X/2 and pos.X < boxPos.X + boxSize.X/2 and
+                       pos.Y > boxPos.Y - boxSize.Y/2 and pos.Y < boxPos.Y + boxSize.Y/2 and
+                       pos.Z > boxPos.Z - boxSize.Z/2 and pos.Z < boxPos.Z + boxSize.Z/2
+            end
+            return false
+        end
+        
+        -- Function to determine if the player is on the left or right side of the box with 100% accuracy
+        local function isPlayerOnLeftOrRight(box)
+            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return "unknown" end
+        
+            -- Calculate the vector from the box to the player
+            local boxToPlayer = (hrp.Position - box.Position).Unit
+        
+            -- Use the box's right vector to determine if the player is on the left or right
+            local dotProduct = box.CFrame.RightVector:Dot(boxToPlayer)
+        
+            if dotProduct > 0 then
+                return "right"
+            else
+                return "left"
+            end
+        end
+        
+        -- Function to check if the player has a straight path to the target
+        local function hasStraightPathToTarget(box)
+            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return false end
+        
+            -- Check if the player's Z position is almost perfectly aligned with the box's Z position
+            return math.abs(hrp.Position.Z - box.Position.Z) < 0.01 -- Maximize accuracy with a very small threshold
+        end
+        
+        -- Function to determine which target to aim at
+        local function determineTarget(box)
+            if hasStraightPathToTarget(box) then
+                if box == box1 then
+                    return sensorGoals:GetChildren()[2] -- Aim at this if in box1
+                elseif box == box2 then
+                    return sensorGoals.SensorGoal -- Aim at this if in box2
+                end
+            else
+                local position = isPlayerOnLeftOrRight(box)
+                if box == box1 then
+                    if position == "left" then
+                        return corners.RTopRight
+                    else
+                        return corners.RTopLeft
+                    end
+                elseif box == box2 then
+                    if position == "left" then
+                        return corners.LTopLeft
+                    else
+                        return corners.LTopRight
+                    end
+                end
+            end
+        end
+        
+        -- Function to aim at a target with maximum precision
+        local function aimAtTarget(target)
+            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp and target then
+                -- Ensure the CFrame is calculated with maximum precision
+                hrp.CFrame = CFrame.new(hrp.Position, target.Position)
+            end
+        end
+        
+        -- Function to fire a shot with specific arguments
+        local function fireShot(upVectorDampen)
+            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local lookVectorMultiplier = 1
+                local upVector = hrp.CFrame.UpVector / upVectorDampen
+        
+                -- Check if the player's username isn't set to player on workspace.BallFolder.Ball
+                if ball:GetAttribute("player") ~= player.Name then
+                    lookVectorMultiplier = 1.16
+                    upVector = -hrp.CFrame.UpVector/26 -- Remove UpVector
+                end
+                local bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.Parent = (game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
+            bodyVelocity.Velocity = ((game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart").CFrame.LookVector*85)
+            bodyVelocity.MaxForce = Vector3.new(math.huge, 0, math.huge)
+            game.Debris:AddItem(bodyVelocity, .6)
+                local args = {
+                    [1] = hrp.CFrame.LookVector,
+                    [2] = 0,
+                    [3] = false,
+                    [4] = false,
+                    [5] = false,
+                    [6] = false,
+                    [7] = false,
+                    [9] = false,
+                    [10] = Color3.new(
+                        (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Red") and player.Character.AuraColour.Red.Value) or 1,
+                        (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Green") and player.Character.AuraColour.Green.Value) or 1,
+                        (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Blue") and player.Character.AuraColour.Blue.Value) or 1
+                    ),
+                    [11] = 0,
+                    [12] = false,
+                    [13] = false,
+                    [14] = false,
+                    [15] = false,
+                    [16] = false,
+                    [17] = false,
+                    [18] = false
+                }
+        
+                ReplicatedStorage:WaitForChild("shoot"):FireServer(unpack(args))
+                wait(0.02)
+                    local speaker = game:GetService("Players").LocalPlayer
+    local plr = game:GetService("Players").LocalPlayer
+    local args = {
+       [1] = 13295926648,
+       [2] = 1,
+    }
+    
+    function r15(plr)
+        if plr.Character:FindFirstChildOfClass('Humanoid').RigType == Enum.HumanoidRigType.R15 then
+            return true
+        end
+    end
+    
+    if not r15(speaker) then
+        local pchar = speaker.Character
+        local AnimationId = tostring(args[1])
+        local Anim = Instance.new("Animation")
+        Anim.AnimationId = "rbxassetid://"..AnimationId
+        local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
+        k:Play()
+        if args[2] then
+            k:AdjustSpeed(tostring(args[2]))
+        end
+    else
+        notify('R6 Required','This command requires the r6 rig type')
+    end
+                            local args = {
+                    [1] = hrp.CFrame.LookVector + -hrp.CFrame.UpVector,
+                    [2] = -120,
+                    [3] = false,
+                    [4] = false,
+                    [5] = false,
+                    [6] = false,
+                    [7] = false,
+                    [9] = false,
+                    [10] = Color3.new(
+                        (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Red") and player.Character.AuraColour.Red.Value) or 1,
+                        (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Green") and player.Character.AuraColour.Green.Value) or 1,
+                        (player.Character:FindFirstChild("AuraColour") and player.Character.AuraColour:FindFirstChild("Blue") and player.Character.AuraColour.Blue.Value) or 1
+                    ),
+                    [11] = 0,
+                    [12] = false,
+                    [13] = false,
+                    [14] = false,
+                    [15] = false,
+                    [16] = false,
+                    [17] = false,
+                    [18] = false
+                }
+        
+                game:GetService("ReplicatedStorage"):WaitForChild("SpecEvents"):WaitForChild("Formless"):FireServer(unpack(args))
+            end
+        end
+        
+        -- Main logic to check the box and aim/fire
+        local function main()
+            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+        
+            local upVectorDampen = 10
+            local closestBox = (hrp.Position - box1.Position).Magnitude < (hrp.Position - box2.Position).Magnitude and box1 or box2
+        
+            if isInBox(closestBox) then
+                upVectorDampen = 20
+            end
+        
+            -- Determine the target to aim at based on the ball's position
+            local target
+        
+            if closestBox == box1 and (ball.Position.X < hrp.Position.X - 5 or ball.Position.X > hrp.Position.X + 5) then
+                target = sensorGoals:GetChildren()[2] -- Aim at this if in box1 and ball is too far left or right
+            elseif closestBox == box2 and (ball.Position.X < hrp.Position.X - 5 or ball.Position.X > hrp.Position.X + 5) then
+                target = sensorGoals.SensorGoal -- Aim at this if in box2 and ball is too far left or right
+            else
+                target = determineTarget(closestBox)
+            end
+        
+            -- Aim at the determined target
+            aimAtTarget(target)
+        
+            -- Fire the shot
+            fireShot(upVectorDampen)
+        end
+        
+        -- Run the main function
+        main()
+        
+        -- Wait for 3 seconds
+        wait(1)
+        
+        -- Resume animations
+        Animate.Disabled = false
+        notify('Refresh Animations', 'Animations resumed successfully')
+    end
+    
+    refreshAnimations()      
+end)
+
+ShootingSection:NewKeybind("UI Toggle", "", Enum.KeyCode.LeftAlt, function()
+	Library:ToggleUI()
+end)
